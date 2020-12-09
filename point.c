@@ -3,8 +3,8 @@
 
 Point Point_vlau(double x, double y)
 {
-    Point initalized = { x, y };
-    return initalized;
+    Point initialized = { x, y };
+    return initialized;
 }
 
 void Point_print(Point *self)

@@ -1,6 +1,7 @@
+#ifndef POINT_H
+#define POINT_H
 
 typedef struct Point {
-
     double x;
     double y;
 
@@ -15,3 +16,5 @@ typedef struct Point {
  * Print a represntaton of a Point to stdout
 */
 void Point_print(Point *self);
+
+#endif
