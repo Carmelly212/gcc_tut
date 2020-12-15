@@ -2,61 +2,82 @@
 
 CC=gcc
 
-SRCS="point.c main.c"
-HDRS="point.h"
-EXEC=point
+PROGRAMS="A B"
 
 
-if [ $1 ] && [ $1 == "clean" ]
-then
-	echo "Deleting obj and exec..."
-		rm -f *.o $EXEC
-		echo "DONE"
-		exit
-fi
+A_SRCS="point.c point_main.c"
+A_HDRS="point.h"
+A_EXEC=point
 
+B_SRCS="person.c person_main.c"
+B_HDRS="person.h"
+B_EXEC=person
 
-
-function build_obj()
-{
-	ISRCS=$*
-	
-	for SRC in $ISRCS
+for x in $PROGRAMS
 	do
-		OBJ=${SRC/%.c/.o}
+
+	SRCS="${x}_SRCS"
+    HDRS="${x}_HDRS"
+    EXEC="${x}_EXEC"
 	
-		OBJS="$OBJ $OBJS"
+
+	if [ $1 ] && [ $1 == "clean" ]
+	then
+		echo "Deleting obj and exec..."
+			rm -f *.o ${!EXEC}
+			echo "DONE"
+			exit
+	fi
+
+
+
+	function build_obj()
+	{
+		ISRCS=$@
+
 		
-		for HDR in $HDRS
+
+		for SRC in $ISRCS
 		do
+			OBJ=${SRC/%.c/.o}
 		
-			if [ $HDR -nt $OBJ ] || [ $SRC -nt $OBJ ]
-			then
-				echo "Compilling $SRC..."
-				$CC -c -o $OBJ $SRC
-			fi
-		
+			OBJS="$OBJ $OBJS"
+			
+			for HDR in ${!HDRS}
+			do
+			
+				if [ $HDR -nt $OBJ ] || [ $SRC -nt $OBJ ]
+				then
+					echo "Compilling $SRC..."
+					$CC -c -o $OBJ $SRC
+					
+				fi
+			
+			done
+
 		done
 
-	done
+	}
 
-}
+	function build_exec()
+	{
+		IOBJS=$@
+		#echo $IOBJS
+		for OBJ in $IOBJS
+		do
+			if [ $OBJ -nt ${!EXEC} ]
+			then
+				echo "Building ${!EXEC}..."
+				$CC -o ${!EXEC} $IOBJS
+				break
+			fi
+		done
+	}
 
-function build_exec()
-{
-	IOBJS=$*
-	for OBJ in $IOBJS
-	do
-		if [ $OBJ -nt $EXEC ]
-		then
-			echo "Building $EXEC..."
-			$CC -o $EXEC $IOBJS
-			break
-		fi
-	done
-}
-
-build_obj $SRCS
-build_exec $OBJS
+   
+	build_obj ${!SRCS}
+	build_exec $OBJS
+	 
+done
 
 
