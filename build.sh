@@ -12,9 +12,25 @@ B_SRCS="person.c person_main.c"
 B_HDRS="person.h"
 B_EXEC=person
 
+
+if [ $1 ] && [ $1 == "clean" ]
+then
+    echo "Deleting obj and exec..."
+    rm -f *.o ${EXEC}
+    for x in $PROGRAMS
+    do
+        EXEC="${x}_EXEC"
+        rm -f ${!EXEC}
+    done
+    echo "DONE"
+    exit
+fi
+
+
+
 function build_obj() #//A_SRCS="point.c point_main.c"
 {
-    ISRCS=$@
+    ISRCS=${!@}
     unset OBJS
     for SRC in $ISRCS
     do
@@ -63,21 +79,7 @@ do
     HDRS="${x}_HDRS"
     EXEC="${x}_EXEC"
 
-
-
-    if [ $1 ] && [ $1 == "clean" ]
-    then
-        echo "Deleting obj and exec..."
-        rm -f *.o ${!EXEC}
-        echo "DONE"
-        exit
-    fi
-
-
-    build_obj ${!SRCS}
+    build_obj $SRCS
     build_exec $OBJS
-
-
-
 
 done
